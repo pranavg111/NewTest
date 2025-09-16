@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify
 import os
 from pydantic import BaseModel
-from langchain_community.document_loaders import PyPDFLoader
+#from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
@@ -11,25 +11,31 @@ from langchain.chains import RetrievalQA
 # -------------------
 # Load and process PDF
 # -------------------
-loader = PyPDFLoader("Pranav_Resume.pdf")
-pages = loader.load()
-
+#loader = PyPDFLoader("Pranav_Resume.pdf")
+#pages = loader.load()
+text = "This is the resume content."
 splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-docs = splitter.split_documents(pages)
+docs = splitter.create_documents([text])
 
-embedding_model = OpenAIEmbeddings(
-    model="text-embedding-ada-002",
-    openai_api_key=os.getenv("OPENAI_API_KEY")
-)
+embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002", openai_api_key=os.getenv("OPENAI_API_KEY"))
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=os.getenv("OPENAI_API_KEY"))
 
-vectorstore = FAISS.from_documents(docs, embedding_model)
-retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+# splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+# docs = splitter.split_documents(pages)
 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    temperature=0,
-    openai_api_key=os.getenv("OPENAI_API_KEY")
-)
+#embedding_model = OpenAIEmbeddings(
+#     model="text-embedding-ada-002",
+#     openai_api_key=os.getenv("OPENAI_API_KEY")
+# )
+
+# vectorstore = FAISS.from_documents(docs, embedding_model)
+# retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     temperature=0,
+#     openai_api_key=os.getenv("OPENAI_API_KEY")
+# )
 
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
@@ -64,6 +70,7 @@ def ask_question():
 
 # if __name__ == "__main__":
 #     app.run(host="0.0.0.0")
+
 
 
 
