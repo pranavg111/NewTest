@@ -1,5 +1,4 @@
-pip install pypdf
-
+#pip install pypdf
 from flask import Flask, request, jsonify
 import os
 from pydantic import BaseModel
@@ -65,6 +64,7 @@ def ask_question():
 
 # if __name__ == "__main__":
 #     app.run(host="0.0.0.0")
+
 
 
 
