@@ -37,27 +37,43 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=os.getenv("O
 #     openai_api_key=os.getenv("OPENAI_API_KEY")
 # )
 
-qa_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    retriever=retriever,
-    chain_type="stuff"
-)
+# qa_chain = RetrievalQA.from_chain_type(
+#     llm=llm,
+#     retriever=retriever,
+#     chain_type="stuff"
+# )
 
 # ---------------
 # Flask App
 # ---------------
+# app = Flask(__name__)
+
+# @app.route("/ask", methods=["POST"])
+# def ask_question():
+#     data = request.get_json()
+#     query = data.get("query", "")
+#     result = qa_chain.invoke({"query": query})
+#     return jsonify({"question": query, "answer": result["result"]})
+
 app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "✅ App is running!"
 
 @app.route("/ask", methods=["POST"])
 def ask_question():
     data = request.get_json()
     query = data.get("query", "")
-    result = qa_chain.invoke({"query": query})
-    return jsonify({"question": query, "answer": result["result"]})
+
+    # Call model directly (no retriever)
+    result = llm.invoke(query)
+
+    return jsonify({"question": query, "answer": result.content})
 
 
-# if __name__ == "__main__":
-#     app.run(host="0.0.0.0")
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")
 
 # app = Flask(__name__)
 
@@ -70,6 +86,7 @@ def ask_question():
 
 # if __name__ == "__main__":
 #     app.run(host="0.0.0.0")
+
 
 
 
