@@ -4,7 +4,7 @@ import os
 from pydantic import BaseModel
 #from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import FAISS
+#from langchain.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.chains import RetrievalQA
 
@@ -70,6 +70,7 @@ def ask_question():
 
 # if __name__ == "__main__":
 #     app.run(host="0.0.0.0")
+
 
 
 
