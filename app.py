@@ -4,7 +4,8 @@ import os
 from pydantic import BaseModel
 #from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import FAISS
+#from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.chains import RetrievalQA
 
@@ -19,8 +20,10 @@ docs = splitter.create_documents([text])
 
 embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002", openai_api_key=os.getenv("OPENAI_API_KEY"))
 
-vectorstore = FAISS.from_documents(docs, embedding_model)
+#vectorstore = FAISS.from_documents(docs, embedding_model)
+vectorstore = Chroma.from_documents(docs, embedding_model)
 retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+#retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -86,6 +89,7 @@ def ask_question():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
+
 
 
 
