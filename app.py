@@ -58,7 +58,8 @@ from flask import Flask, request, jsonify
 # LangChain imports
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import Chroma
+#from langchain_community.vectorstores import Chroma
+from langchain.vectorstores import InMemoryVectorStore
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.chains import RetrievalQA
 
@@ -148,11 +149,13 @@ def init_chain():
     persist_dir = "/tmp/chroma_store"
     try:
         log.info(f"Creating Chroma vectorstore at {persist_dir} ...")
-        vectorstore = Chroma.from_documents(
-            docs,
-            embedding=embeddings,
-            persist_directory=persist_dir
-        )
+        # vectorstore = Chroma.from_documents(
+        #     docs,
+        #     embedding=embeddings,
+        #     persist_directory=persist_dir
+        # )
+        vectorstore = InMemoryVectorStore.from_documents(docs, embedding_model)
+
     except TypeError:
         # Some versions expect different kwarg names — try alternate signature
         log.warning("Chroma.from_documents signature mismatch; trying alternate call.")
@@ -167,6 +170,7 @@ def init_chain():
 
     # 4) Build RetrievalQA chain
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
         retriever=retriever,
@@ -209,6 +213,7 @@ def ask_question():
 if __name__ == "__main__":
     # Local dev: run on port 8000 to match Azure warmup ping expectations
     app.run(host="0.0.0.0", port=8000)
+
 
 
 
