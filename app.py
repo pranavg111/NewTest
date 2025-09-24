@@ -170,6 +170,7 @@ import os
 import logging
 from langchain.schema import Document
 from flask import Flask, request, jsonify
+from langchain.vectorstores import InMemoryVectorStore
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.chains import RetrievalQA
@@ -200,11 +201,13 @@ def init_chain():
     # Embeddings and LLM
     embeddings = OpenAIEmbeddings(model="text-embedding-ada-002", openai_api_key=openai_key)
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=openai_key)
+    vectorstore = InMemoryVectorStore.from_documents(docs, embeddings)
+
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
     # Instead of vectorstore, we can do simple retrieval by chunk matching
     from langchain.chains import LLMChain
-    qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=None, chain_type="stuff")
-    qa_chain.docs = docs  # store chunks directly
+    qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, chain_type="stuff")
 
 @app.route("/")
 def home():
@@ -231,6 +234,7 @@ def ask_question():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
+
 
 
 
