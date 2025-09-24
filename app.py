@@ -168,6 +168,7 @@
 ###################################################################
 import os
 import logging
+from langchain.schema import Document
 from flask import Flask, request, jsonify
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
@@ -230,6 +231,7 @@ def ask_question():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
+
 
 
 
