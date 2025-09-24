@@ -1,6 +1,5 @@
 flask
 langchain==0.3.27
-langchain-community==0.3.29
 langchain-openai==0.2.6
 openai==1.107.0
 pydantic==2.8.2
